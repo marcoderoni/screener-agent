@@ -32,10 +32,20 @@ from __future__ import annotations
 """
 
 # ── CONFIG ────────────────────────────────────────────────────
-GEMINI_API_KEY = "AIzaSyBLu7uxNyDkPYTsjsG53fFYhk3Y9W32jbg"       # aistudio.google.com (free)
-RESEND_API_KEY = "re_PSKejcj2_PGMr44qwsDbXP2mAxVTg7gQs"       # resend.com → API Keys (free)
-RESEND_FROM    = "onboarding@resend.dev"   # dominio verificato in Resend
-EMAIL_TO       = "marcoderoni@gmail.com"         # recipient list
+# Nessun segreto nel codice. Le chiavi si leggono da variabili d'ambiente
+# (vedi .env.example). In locale: copia .env.example in .env e compilalo.
+import os
+
+try:
+    from dotenv import load_dotenv   # opzionale: pip install python-dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]          # aistudio.google.com
+RESEND_API_KEY = os.environ["RESEND_API_KEY"]          # resend.com → API Keys
+RESEND_FROM    = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
+EMAIL_TO       = os.environ.get("EMAIL_TO", "")        # recipient list
 
 # Hard filter thresholds
 UPSIDE_MIN       = 0.20    # 20% minimum upside to analyst mean target
