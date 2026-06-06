@@ -1,0 +1,47 @@
+name: Weekly Screener
+
+# Esecuzione automatica + pulsante manuale.
+on:
+  schedule:
+    # 12:00 UTC ogni lunedì (≈ 13:00 ora di Amsterdam d'inverno, 14:00 d'estate).
+    # GitHub usa SEMPRE UTC: regola tu il fuso. Sintassi: min ora * * giorno_settimana
+    - cron: "0 12 * * 1"
+  workflow_dispatch:        # permette il lancio manuale dalla tab "Actions"
+
+jobs:
+  run-screener:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yfinance pandas openpyxl tqdm httpx google-genai lxml
+
+      - name: Run screener
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM:    ${{ secrets.RESEND_FROM }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+          OUTPUT_DIR:     ${{ github.workspace }}
+        run: python screener.py
+
+      # Opzionale: conserva l'Excel come "artifact" scaricabile dalla pagina del run,
+      # oltre alla mail. Si può rimuovere se basta la mail.
+      - name: Upload Excel artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screener-output
+          path: "*.xlsx"
+          if-no-files-found: ignore
