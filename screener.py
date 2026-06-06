@@ -498,7 +498,9 @@ def main():
 
     # Output
     date_str   = datetime.today().strftime("%Y%m%d")
-    excel_path = os.path.expanduser(f"~/Desktop/screener_{date_str}.xlsx")
+    out_dir    = os.environ.get("OUTPUT_DIR") or os.path.expanduser("~/Desktop")
+    os.makedirs(out_dir, exist_ok=True)
+    excel_path = os.path.join(out_dir, f"screener_{date_str}.xlsx")
     write_excel(results_by_universe, excel_path)
 
     # Summary
