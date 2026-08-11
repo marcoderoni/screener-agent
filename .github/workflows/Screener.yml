@@ -11,8 +11,9 @@ on:
 jobs:
   run-screener:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 30
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -45,3 +46,9 @@ jobs:
           name: screener-output
           path: "*.xlsx"
           if-no-files-found: ignore
+      - name: Keepalive
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "keepalive"
+          git push
